@@ -45,24 +45,29 @@
     mysqli_close($conn);
 
     try {
-        $pgsqlConn = new PDO('pgsql:host=db;port=5432;dbname=your_database', 'postgres', '1234');
+        $pgsqlConn = new PDO('pgsql:host=postgresql;port=5432;dbname=your_database', 'postgres', '1234');
 
-        $query = "SELECT * FROM person";
+        $query = "SELECT * FROM person;";
         $result = $pgsqlConn->query($query);
 
-        echo '<table class="table table-striped">';
-        echo '<thead><tr><th></th><th>id</th><th>name</th></tr></thead>';
-        while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
-            echo '<tr>';
-            echo '<td><a href="#"><span class="glyphicon glyphicon-search"></span></a></td>';
-            foreach ($row as $element) {
-                echo '<td>' . $element . '</td>';
+        if ($result !== false) {
+            echo '<table class="table table-striped">';
+            echo '<thead><tr><th></th><th>id</th><th>name</th></tr></thead>';
+            while ($row = $result->fetch(PDO::FETCH_ASSOC)) {
+                echo '<tr>';
+                echo '<td><a href="#"><span class="glyphicon glyphicon-search"></span></a></td>';
+                foreach ($row as $element) {
+                    echo '<td>' . $element . '</td>';
+                }
+                echo '</tr>';
             }
-            echo '</tr>';
-        }
-        echo '</table>';
+            echo '</table>';
 
-        $result = null;
+            $result = null;
+        } else {
+            echo "Failed to execute query: " . $pgsqlConn->errorInfo();
+        }
+
         $pgsqlConn = null;
     } catch (PDOException $e) {
         echo "Failed to connect to PostgreSQL: " . $e->getMessage();
